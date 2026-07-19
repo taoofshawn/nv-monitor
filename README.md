@@ -69,13 +69,6 @@ scrape_configs:
 
 The repository includes `nv-monitor-grafana.json` — a complete Grafana dashboard with 18 panels covering CPU, memory, GPU, disk, and RDMA metrics. Import it via the Grafana UI or API.
 
-If your Grafana instance has a service account token, save it in `.grafana-token`:
-
-```
-GRAFANA_URL=http://grafana.example.com
-GRAFANA_TOKEN=glsa_...
-```
-
 ## Files
 
 ```
@@ -89,6 +82,5 @@ GRAFANA_TOKEN=glsa_...
 │       ├── tasks/main.yml    # Download, install, enable
 │       ├── files/nv-monitor.service  # systemd unit
 │       └── handlers/main.yml
-├── nv-monitor-grafana.json   # Grafana dashboard
-└── .grafana-token            # Grafana API token (local only)
+└── nv-monitor-grafana.json   # Grafana dashboard
 ```
