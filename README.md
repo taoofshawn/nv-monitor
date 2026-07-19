@@ -19,7 +19,11 @@ This will:
 
 - SSH access to the Spark nodes as `sdrew` (or update `inventory/hosts.yml`)
 - Passwordless or password-based `sudo` (`--ask-become-pass` prompts for it)
-- Python 3 on the control machine
+- Python 3 + `python3-venv` on the control machine
+
+  ```bash
+  sudo apt-get install -y python3-venv
+  ```
 
 ## Inventory
 
