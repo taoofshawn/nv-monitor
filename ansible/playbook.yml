@@ -1,0 +1,8 @@
+---
+- name: Deploy nv-monitor to DGX Spark nodes
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - nv-monitor

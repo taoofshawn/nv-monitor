@@ -1,0 +1,74 @@
+---
+- name: Create data directory
+  ansible.builtin.file:
+    path: /var/lib/nv-monitor
+    state: directory
+    mode: "0755"
+
+- name: Check if nv-monitor is already installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/nv-monitor
+  register: binary_stat
+
+- name: Fetch latest release info from GitHub
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/wentbackward/nv-monitor/releases/latest
+    return_content: yes
+  register: gh_release
+
+- name: Extract latest tag and arm64 asset URL
+  ansible.builtin.set_fact:
+    latest_tag: "{{ gh_release.json.tag_name }}"
+    binary_url: >-
+      {{ gh_release.json.assets |
+         selectattr('name', 'equalto', 'nv-monitor-linux-arm64') |
+         map(attribute='browser_download_url') | first }}
+
+- name: Download nv-monitor arm64 binary
+  ansible.builtin.get_url:
+    url: "{{ binary_url }}"
+    dest: /tmp/nv-monitor-linux-arm64
+    mode: "0755"
+
+- name: Install binary
+  ansible.builtin.copy:
+    src: /tmp/nv-monitor-linux-arm64
+    dest: /usr/local/bin/nv-monitor
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: yes
+
+- name: Install systemd unit file
+  ansible.builtin.copy:
+    src: nv-monitor.service
+    dest: /etc/systemd/system/nv-monitor.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd
+
+- name: Enable and start nv-monitor service
+  ansible.builtin.systemd:
+    name: nv-monitor
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Clean up downloaded binary
+  ansible.builtin.file:
+    path: /tmp/nv-monitor-linux-arm64
+    state: absent
+
+- name: Verify nv-monitor is running
+  ansible.builtin.uri:
+    url: http://localhost:9101/metrics
+    return_content: yes
+  register: metrics_check
+  retries: 5
+  delay: 2
+  until: metrics_check.status == 200
+
+- name: Show deployed version
+  ansible.builtin.debug:
+    msg: "nv-monitor {{ latest_tag }} deployed and serving metrics on port 9101"

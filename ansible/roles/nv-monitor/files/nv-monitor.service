@@ -1,0 +1,24 @@
+[Unit]
+Description=nv-monitor — Prometheus/OpenMetrics exporter for NVIDIA DGX Spark
+Documentation=https://github.com/wentbackward/nv-monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/nv-monitor -n -p 9101
+Restart=always
+RestartSec=5
+# CPU and memory readings need access to /proc and /sys
+# NVML (GPU metrics) is loaded dynamically from host drivers
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/nv-monitor
+PrivateTmp=yes
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+ProtectProc=invisible
+
+[Install]
+WantedBy=multi-user.target

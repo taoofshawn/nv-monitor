@@ -1,2 +1,5 @@
 # Grafana service account token
 .grafana-token
+
+# Python virtual environment
+.venv/
