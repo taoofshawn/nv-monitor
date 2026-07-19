@@ -1,6 +1,8 @@
 # nv-monitor — DGX Spark native deployment
 
-Deploy [nv-monitor](https://github.com/wentbackward/nv-monitor) as a native systemd service on DGX Spark nodes — no container runtime required. Includes an Ansible playbook and a Grafana dashboard.
+Deploy [nv-monitor](https://github.com/wentbackward/nv-monitor) as a systemd service on [DGX Spark](https://marketplace.nvidia.com/en-us/developer/dgx-spark/) nodes via ansible.  includes a sample grafana dashboard.
+
+There is a docker deployment variation in a branch if that is a preference. The nv-monitor build had to be modified to cleaning up all the virtual mountpoints and actually report on the / mount. It works, but I think the ansible deployment is cleaner. 
 
 ## Quick start
 
@@ -17,7 +19,7 @@ This will:
 
 ## Prerequisites
 
-- SSH access to the Spark nodes as `sdrew` (or update `inventory/hosts.yml`)
+- SSH access to the Spark nodes (update `inventory/hosts.yml` with your hostnames and username)
 - Passwordless or password-based `sudo` (`--ask-become-pass` prompts for it)
 - Python 3 + `python3-venv` on the control machine
 
@@ -27,17 +29,17 @@ This will:
 
 ## Inventory
 
-Edit `inventory/hosts.yml` to add or remove nodes:
+Edit `inventory/hosts.yml` to add or remove nodes and set the username:
 
 ```yaml
 all:
   hosts:
     spark-0f0b:
       ansible_host: spark-0f0b.shawndo.intra
-      ansible_user: sdrew
     spark-6d14:
       ansible_host: spark-6d14.shawndo.intra
-      ansible_user: sdrew
+  vars:
+    ansible_user: sdrew
 ```
 
 ## Service details
@@ -49,7 +51,7 @@ all:
 - **Restart:** `always`
 - **Data directory:** `/var/lib/nv-monitor`
 
-The binary downloads the latest precompiled release for `linux/arm64` from the [upstream repository](https://github.com/wentbackward/nv-monitor/releases). No compilation needed.
+The binary downloads the latest precompiled release for `linux/arm64` from the [upstream repository](https://github.com/wentbackward/nv-monitor/releases).
 
 ## Prometheus scrape config
 
