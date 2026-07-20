@@ -75,6 +75,10 @@ scrape_configs:
 
 The repository includes `nv-monitor-grafana.json` — a complete Grafana dashboard with 18 panels covering CPU, memory, GPU, disk, and RDMA metrics. Import it via the Grafana UI or API.
 
+## Screenshot
+
+![Dash](nv-monitor-grafana.png)
+
 ## Files
 
 ```
